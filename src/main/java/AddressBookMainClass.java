@@ -9,6 +9,7 @@ public class AddressBookMainClass {
 		System.out.println("Enter the file operation for Read and Write:");
 		System.out.println("1. Using File IO");
 		System.out.println("2. Using OpenCSV");
+		System.out.println("3. Using GSON");
 		System.out.println("Enter Your Choice: ");
 		int choice = sc.nextInt();
 		boolean valid = false;
@@ -20,6 +21,10 @@ public class AddressBookMainClass {
 					break;
 				case 2:
 					fileType = "OpenCSV";
+					valid = true;
+					break;
+				case 3:
+					fileType = "GSON";
 					valid = true;
 					break;
 				default:

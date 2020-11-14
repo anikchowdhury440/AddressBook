@@ -20,6 +20,9 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.lang.reflect.*;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -97,7 +100,7 @@ public class AddressBook {
 	}
 	
 	public void readAddressBookInCSV() throws IOException {
-		Path path = Paths.get("C:\\Users\\Anik Chowdhury\\Desktop\\Fellowship\\AddressBookCSVJSON\\src\\main\\resources\\CSVAddressBook.csv");
+		Path path = Paths.get("C:\\Users\\Anik Chowdhury\\Github\\AddressBook\\src\\main\\resources\\CSVAddressBook.csv");
 		try (Reader reader = Files.newBufferedReader(path);) {
 			CsvToBean<CSVPerson> csvToBean = new CsvToBeanBuilder(reader)
                     .withType(CSVPerson.class)
@@ -150,12 +153,49 @@ public class AddressBook {
 		}
 	}
 	
+	public void writeAddressBookinJSON() throws IOException {
+		Path path = Paths.get("C:\\Users\\Anik Chowdhury\\Github\\AddressBook\\src\\main\\resources\\JSONAddressBook.json");
+		GsonBuilder gsonMapBuilder = new GsonBuilder();
+		Gson gson = gsonMapBuilder.setPrettyPrinting().create();
+		String json = gson.toJson(addressBook);
+		try (FileWriter writer = new FileWriter(path.toFile())){
+			writer.write(json);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void readAddressBookinJSON() throws IOException {
+		Path path = Paths.get("C:\\Users\\Anik Chowdhury\\Github\\AddressBook\\src\\main\\resources\\JSONAddressBook.json");
+		Gson gson = new Gson();
+		try (FileReader reader = new FileReader(path.toFile())){
+			Type type = new TypeToken<Map<String, List<Person>>>() {}.getType();
+			addressBook = gson.fromJson(reader, type);	
+			countAddressbook = 0;
+			for(int i = 0; i < addressBook.size(); i++) {
+				countAddressbook++;
+			}
+			int i = 0;
+			for(Map.Entry k : addressBook.entrySet()) {
+				addressList[i] = (String) k.getKey();
+				i++;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void readAddressBook(String fileType) throws IOException {
 		if(fileType == "File IO") {
 			readAddressBookInFile();
 		}
-		else {
+		else if(fileType == "OpenCSV") {
 			readAddressBookInCSV();
+		}
+		else {
+			readAddressBookinJSON();
 		}
 	}
 	
@@ -163,8 +203,11 @@ public class AddressBook {
 		if(fileType == "File IO") {
 			writeAddressBookInFile();
 		}
-		else {
+		else if(fileType == "OpenCSV") {
 			writeAddressBookInCSV();
+		}
+		else {
+			writeAddressBookinJSON();
 		}
 	}
 	
